@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MediCore — Hospital Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root {
+  --navy: #0B1C3A;
+  --navy-mid: #122548;
+  --navy-light: #1E3A6E;
+  --teal: #0EA5A0;
+  --teal-light: #14C4BE;
+  --teal-soft: #E0F7F6;
+  --coral: #E8553A;
+  --coral-soft: #FDF0ED;
+  --amber: #F59E0B;
+  --amber-soft: #FFFBEB;
+  --green: #10B981;
+  --green-soft: #ECFDF5;
+  --purple: #8B5CF6;
+  --purple-soft: #F5F3FF;
+  --white: #FFFFFF;
+  --off-white: #F8FAFC;
+  --gray-50: #F1F5F9;
+  --gray-100: #E2E8F0;
+  --gray-200: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-600: #475569;
+  --gray-800: #1E293B;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Figtree', system-ui, sans-serif;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 10px 40px rgba(0,0,0,0.10);
+  --shadow-nav: 0 2px 20px rgba(11,28,58,0.15);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--off-white);
+  color: var(--gray-800);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed; top: 0; left: 0;
+  width: 260px; height: 100vh;
+  background: var(--navy);
+  display: flex; flex-direction: column;
+  z-index: 100;
+  transition: width 0.3s ease;
+}
+.sidebar-logo {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; gap: 12px;
+}
+.logo-icon {
+  width: 38px; height: 38px;
+  background: var(--teal);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: white;
+  flex-shrink: 0;
+}
+.logo-text { color: white; }
+.logo-text h1 { font-family: var(--font-serif); font-size: 20px; font-style: italic; letter-spacing: 0.3px; }
+.logo-text span { font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 1px; text-transform: uppercase; }
+
+.nav-section-label {
+  padding: 20px 24px 8px;
+  font-size: 10px; color: rgba(255,255,255,0.3);
+  letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 13px;
+  padding: 11px 20px;
+  margin: 2px 10px;
+  border-radius: var(--radius-sm);
+  color: rgba(255,255,255,0.55);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px; font-weight: 500;
+  text-decoration: none;
+}
+.nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+.nav-item.active { background: var(--teal); color: white; }
+.nav-item .nav-icon { width: 18px; text-align: center; font-size: 15px; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--coral);
+  color: white; font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 20px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.user-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.user-card:hover { background: rgba(255,255,255,0.07); }
+.user-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--navy-light));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600; color: white; flex-shrink: 0;
+}
+.user-info h4 { font-size: 13px; color: white; font-weight: 600; }
+.user-info span { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+/* ── MAIN CONTENT ── */
+.main {
+  margin-left: 260px;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+}
+
+.topbar {
+  background: white;
+  border-bottom: 1px solid var(--gray-100);
+  padding: 0 32px;
+  height: 66px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+  box-shadow: var(--shadow-nav);
+}
+.topbar-left h2 { font-size: 18px; font-weight: 700; color: var(--navy); }
+.topbar-left p { font-size: 12px; color: var(--gray-400); margin-top: 1px; }
+
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.search-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-100);
+  border-radius: 10px;
+  padding: 8px 14px;
+  width: 240px;
+}
+.search-box input {
+  border: none; background: none; outline: none;
+  font-family: var(--font-sans); font-size: 13px; color: var(--gray-800);
+  width: 100%;
+}
+.search-box input::placeholder { color: var(--gray-400); }
+
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 10px;
+  border: 1px solid var(--gray-100);
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--gray-600);
+  position: relative; transition: all 0.2s;
+  font-size: 15px;
+}
+.icon-btn:hover { background: var(--gray-50); color: var(--navy); }
+.notif-dot {
+  position: absolute; top: 7px; right: 7px;
+  width: 7px; height: 7px;
+  background: var(--coral); border-radius: 50%;
+  border: 2px solid white;
+}
+
+/* ── PAGE SECTIONS ── */
+.page { display: none; padding: 28px 32px; }
+.page.active { display: block; }
+
+/* ── CARDS & GRIDS ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px; margin-bottom: 28px;
+}
+.stat-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--gray-100);
+  position: relative; overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.stat-card::after {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 4px; height: 100%;
+}
+.stat-card.teal::after { background: var(--teal); }
+.stat-card.coral::after { background: var(--coral); }
+.stat-card.amber::after { background: var(--amber); }
+.stat-card.green::after { background: var(--green); }
+.stat-card.purple::after { background: var(--purple); }
+
+.stat-icon {
+  width: 42px; height: 42px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; margin-bottom: 14px;
+}
+.stat-card.teal .stat-icon { background: var(--teal-soft); color: var(--teal); }
+.stat-card.coral .stat-icon { background: var(--coral-soft); color: var(--coral); }
+.stat-card.amber .stat-icon { background: var(--amber-soft); color: var(--amber); }
+.stat-card.green .stat-icon { background: var(--green-soft); color: var(--green); }
+.stat-card.purple .stat-icon { background: var(--purple-soft); color: var(--purple); }
+
+.stat-label { font-size: 12px; color: var(--gray-400); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.stat-value { font-size: 30px; font-weight: 700; color: var(--navy); line-height: 1; margin-bottom: 8px; }
+.stat-change { font-size: 12px; display: flex; align-items: center; gap: 4px; }
+.stat-change.up { color: var(--green); }
+.stat-change.down { color: var(--coral); }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+.grid-65 { display: grid; grid-template-columns: 1.7fr 1fr; gap: 20px; margin-bottom: 24px; }
+
+.card {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--gray-100);
+  overflow: hidden;
+}
+.card-header {
+  padding: 20px 24px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-title { font-size: 15px; font-weight: 700; color: var(--navy); }
+.card-subtitle { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+.card-body { padding: 0 24px 24px; }
+
+/* ── BADGES & PILLS ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600; text-transform: capitalize;
+}
+.badge.success { background: var(--green-soft); color: #065F46; }
+.badge.warning { background: var(--amber-soft); color: #92400E; }
+.badge.danger { background: var(--coral-soft); color: #9B1C1C; }
+.badge.info { background: var(--teal-soft); color: #0D6E6A; }
+.badge.purple { background: var(--purple-soft); color: #4C1D95; }
+.badge.neutral { background: var(--gray-50); color: var(--gray-600); }
+
+/* ── TABLES ── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left; padding: 10px 16px;
+  font-size: 11px; font-weight: 600; color: var(--gray-400);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-100);
+}
+td {
+  padding: 13px 16px;
+  font-size: 13px; color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-100);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--gray-50); }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 18px; border-radius: var(--radius-sm);
+  font-family: var(--font-sans); font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-primary { background: var(--teal); color: white; }
+.btn-primary:hover { background: var(--teal-light); transform: translateY(-1px); }
+.btn-outline {
+  background: white; color: var(--navy);
+  border: 1px solid var(--gray-200);
+}
+.btn-outline:hover { background: var(--gray-50); border-color: var(--gray-300); }
+.btn-danger { background: var(--coral); color: white; }
+.btn-danger:hover { background: #D63B22; }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+
+/* ── FORM ELEMENTS ── */
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+.form-control {
+  width: 100%; padding: 10px 14px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans); font-size: 14px; color: var(--navy);
+  background: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.form-control:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(14,165,160,0.12); }
+.form-control::placeholder { color: var(--gray-400); }
+select.form-control { cursor: pointer; }
+
+/* ── PATIENT CARD ── */
+.patient-card {
+  display: flex; align-items: center; gap: 10px;
+}
+.patient-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; flex-shrink: 0;
+  color: white;
+}
+.patient-name { font-size: 13px; font-weight: 600; color: var(--navy); }
+.patient-id { font-size: 11px; color: var(--gray-400); }
+
+/* ── CHART BARS ── */
+.chart-bars {
+  display: flex; align-items: flex-end; gap: 8px;
+  height: 120px; padding: 0 0 0 0;
+}
+.bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.bar-wrap { display: flex; gap: 3px; align-items: flex-end; height: 90px; }
+.bar {
+  flex: 1; border-radius: 4px 4px 0 0;
+  transition: opacity 0.2s;
+  min-width: 8px;
+}
+.bar:hover { opacity: 0.8; }
+.bar-label { font-size: 10px; color: var(--gray-400); }
+
+/* ── TIMELINE ── */
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before {
+  content: '';
+  position: absolute; left: 7px; top: 0; bottom: 0;
+  width: 2px; background: var(--gray-100);
+}
+.timeline-item { position: relative; margin-bottom: 20px; }
+.timeline-dot {
+  position: absolute; left: -24px; top: 3px;
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px currentColor;
+}
+.timeline-dot.teal { color: var(--teal); background: var(--teal); }
+.timeline-dot.coral { color: var(--coral); background: var(--coral); }
+.timeline-dot.amber { color: var(--amber); background: var(--amber); }
+.timeline-dot.green { color: var(--green); background: var(--green); }
+.timeline-time { font-size: 11px; color: var(--gray-400); margin-bottom: 3px; }
+.timeline-text { font-size: 13px; color: var(--gray-800); }
+.timeline-text strong { color: var(--navy); }
+
+/* ── VITALS ── */
+.vitals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.vital-box {
+  background: var(--gray-50);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--gray-100);
+}
+.vital-label { font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.vital-value { font-size: 22px; font-weight: 700; color: var(--navy); }
+.vital-unit { font-size: 12px; color: var(--gray-400); font-weight: 400; }
+.vital-status { font-size: 11px; margin-top: 4px; }
+.vital-status.normal { color: var(--green); }
+.vital-status.warning { color: var(--amber); }
+.vital-status.critical { color: var(--coral); }
+
+/* ── APPOINTMENT SLOT ── */
+.slot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
+.slot {
+  padding: 8px 4px; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--gray-200);
+  text-align: center; font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; color: var(--gray-600);
+}
+.slot:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-soft); }
+.slot.booked { background: var(--gray-50); color: var(--gray-400); cursor: not-allowed; border-style: dashed; }
+.slot.selected { background: var(--teal); color: white; border-color: var(--teal); }
+
+/* ── PROGRESS BAR ── */
+.progress { height: 6px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+
+/* ── ALERT ── */
+.alert {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 18px; border-radius: var(--radius-sm);
+  margin-bottom: 16px; font-size: 13px;
+}
+.alert.warning { background: var(--amber-soft); border-left: 3px solid var(--amber); color: #92400E; }
+.alert.danger { background: var(--coral-soft); border-left: 3px solid var(--coral); color: #9B1C1C; }
+.alert.success { background: var(--green-soft); border-left: 3px solid var(--green); color: #065F46; }
+.alert.info { background: var(--teal-soft); border-left: 3px solid var(--teal); color: #0D6E6A; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(11,28,58,0.5);
+  z-index: 200;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(2px);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: white;
+  border-radius: var(--radius-lg);
+  width: 560px; max-width: 95vw;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+  overflow: hidden;
+  animation: modalIn 0.2s ease;
+}
+@keyframes modalIn { from { transform: translateY(20px) scale(0.97); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal-header {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-header h3 { font-size: 17px; font-weight: 700; color: var(--navy); }
+.modal-close { cursor: pointer; color: var(--gray-400); font-size: 18px; transition: color 0.2s; }
+.modal-close:hover { color: var(--navy); }
+.modal-body { padding: 24px 28px; }
+.modal-footer {
+  padding: 16px 28px;
+  border-top: 1px solid var(--gray-100);
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 4px; background: var(--gray-50); padding: 4px; border-radius: 10px; margin-bottom: 20px; width: fit-content; }
+.tab {
+  padding: 8px 18px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; color: var(--gray-600);
+  transition: all 0.2s; border: none; background: none;
+  font-family: var(--font-sans);
+}
+.tab.active { background: white; color: var(--navy); box-shadow: var(--shadow); font-weight: 600; }
+
+/* ── SECTION HEADER ── */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.section-title { font-size: 16px; font-weight: 700; color: var(--navy); }
+.section-subtitle { font-size: 13px; color: var(--gray-400); margin-top: 2px; }
+
+/* ── EHR LAB RESULTS ── */
+.lab-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; border-bottom: 1px solid var(--gray-100);
+}
+.lab-row:last-child { border-bottom: none; }
+.lab-name { font-size: 13px; color: var(--gray-800); }
+.lab-ref { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.lab-val { font-size: 13px; font-weight: 600; }
+.lab-val.high { color: var(--coral); }
+.lab-val.normal { color: var(--green); }
+.lab-val.low { color: var(--amber); }
+
+/* ── DONUT CHART SVG ── */
+.donut-wrap { position: relative; width: 130px; height: 130px; flex-shrink: 0; }
+.donut-wrap svg { position: absolute; inset: 0; }
+.donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.donut-center .big { font-size: 28px; font-weight: 700; color: var(--navy); }
+.donut-center .small { font-size: 11px; color: var(--gray-400); }
+
+/* ── DOCTOR CARD ── */
+.doctor-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px; border-radius: var(--radius);
+  border: 1.5px solid var(--gray-100); background: white;
+  cursor: pointer; transition: all 0.2s;
+}
+.doctor-card:hover { border-color: var(--teal); box-shadow: var(--shadow); }
+.doctor-card .d-avatar {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700; color: white;
+  flex-shrink: 0;
+}
+.doctor-card .d-name { font-size: 14px; font-weight: 700; color: var(--navy); }
+.doctor-card .d-spec { font-size: 12px; color: var(--gray-400); }
+.doctor-card .d-rating { font-size: 12px; color: var(--amber); margin-top: 3px; }
+
+/* ── NOTIFICATION PANEL ── */
+.notif-item {
+  display: flex; gap: 12px; padding: 14px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.notif-text { font-size: 13px; color: var(--gray-800); }
+.notif-text strong { color: var(--navy); }
+.notif-time { font-size: 11px; color: var(--gray-400); margin-top: 3px; }
+.notif-unread { background: var(--teal-soft); }
+.notif-unread .notif-text { font-weight: 500; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page.active > * { animation: fadeUp 0.35s ease both; }
+.page.active > *:nth-child(1) { animation-delay: 0.0s; }
+.page.active > *:nth-child(2) { animation-delay: 0.05s; }
+.page.active > *:nth-child(3) { animation-delay: 0.10s; }
+.page.active > *:nth-child(4) { animation-delay: 0.15s; }
+
+/* ── ACTIVITY PULSE ── */
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.live-dot {
+  display: inline-block; width: 7px; height: 7px;
+  background: var(--green); border-radius: 50%;
+  animation: pulse 1.8s infinite;
+  margin-right: 5px;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
+
+/* ── MINI CALENDAR ── */
+.mini-cal { font-size: 12px; }
+.cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: 600; color: var(--navy); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-day-label { text-align: center; font-size: 10px; color: var(--gray-400); padding: 3px 0; font-weight: 600; }
+.cal-day {
+  text-align: center; padding: 5px 3px; border-radius: 6px;
+  cursor: pointer; color: var(--gray-600); transition: all 0.15s;
+}
+.cal-day:hover { background: var(--gray-50); }
+.cal-day.today { background: var(--navy); color: white; font-weight: 700; }
+.cal-day.has-appt { color: var(--teal); font-weight: 600; }
+.cal-day.other-month { color: var(--gray-200); }
+
+/* ── PHARMACY STOCK ── */
+.stock-bar-wrap { display: flex; align-items: center; gap: 12px; }
+.stock-name { font-size: 13px; font-weight: 500; min-width: 140px; }
+.stock-progress { flex: 1; height: 6px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
+.stock-qty { font-size: 12px; color: var(--gray-400); min-width: 50px; text-align: right; }
+
+/* ── API INDICATOR ── */
+.api-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #0B1C3A; color: rgba(255,255,255,0.7);
+  font-size: 10px; font-family: monospace;
+  padding: 3px 9px; border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.api-method { color: var(--teal-light); font-weight: 700; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .sidebar { width: 220px; }
+  .main { margin-left: 220px; }
+  .grid-65, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     SIDEBAR NAVIGATION
+════════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon"><i class="fas fa-heartbeat"></i></div>
+    <div class="logo-text">
+      <h1>MediCore</h1>
+      <span>HMS Platform</span>
+    </div>
+  </div>
+
+  <div class="nav-section-label">Core Modules</div>
+  <a class="nav-item active" onclick="showPage('dashboard', this)">
+    <span class="nav-icon"><i class="fas fa-th-large"></i></span> Dashboard
+  </a>
+  <a class="nav-item" onclick="showPage('patients', this)">
+    <span class="nav-icon"><i class="fas fa-users"></i></span> Patients
+    <span class="nav-badge">3</span>
+  </a>
+  <a class="nav-item" onclick="showPage('appointments', this)">
+    <span class="nav-icon"><i class="fas fa-calendar-alt"></i></span> Appointments
+  </a>
+  <a class="nav-item" onclick="showPage('ehr', this)">
+    <span class="nav-icon"><i class="fas fa-file-medical"></i></span> EHR Records
+  </a>
+  <a class="nav-item" onclick="showPage('lab', this)">
+    <span class="nav-icon"><i class="fas fa-flask"></i></span> Lab & Diagnostics
+    <span class="nav-badge">5</span>
+  </a>
+
+  <div class="nav-section-label">Hospital Ops</div>
+  <a class="nav-item" onclick="showPage('pharmacy', this)">
+    <span class="nav-icon"><i class="fas fa-pills"></i></span> Pharmacy
+  </a>
+  <a class="nav-item" onclick="showPage('billing', this)">
+    <span class="nav-icon"><i class="fas fa-file-invoice-dollar"></i></span> Billing
+  </a>
+  <a class="nav-item" onclick="showPage('staff', this)">
+    <span class="nav-icon"><i class="fas fa-user-md"></i></span> Staff & Doctors
+  </a>
+  <a class="nav-item" onclick="showPage('notifications', this)">
+    <span class="nav-icon"><i class="fas fa-bell"></i></span> Notifications
+    <span class="nav-badge">8</span>
+  </a>
+
+  <div class="nav-section-label">System</div>
+  <a class="nav-item" onclick="showPage('api', this)">
+    <span class="nav-icon"><i class="fas fa-plug"></i></span> API Monitor
+  </a>
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">NM</div>
+      <div class="user-info">
+        <h4>Negasi Mulualem</h4>
+        <span>System Administrator</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════
+     TOP BAR
+════════════════════════════════════════════ -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2 id="page-title">Dashboard Overview</h2>
+      <p id="page-sub"><span class="live-dot"></span>Live — Mekelle University Hospital · May 2026</p>
+    </div>
+    <div class="topbar-right">
+      <div class="search-box">
+        <i class="fas fa-search" style="color:var(--gray-400); font-size:13px;"></i>
+        <input type="text" placeholder="Search patients, records…" onkeyup="handleSearch(this.value)"/>
+      </div>
+      <div class="icon-btn" onclick="showPage('notifications', document.querySelector('[onclick*=notifications]'))">
+        <i class="fas fa-bell"></i>
+        <span class="notif-dot"></span>
+      </div>
+      <div class="icon-btn">
+        <i class="fas fa-cog"></i>
+      </div>
+      <div class="user-avatar" style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;cursor:pointer;">NM</div>
+    </div>
+  </div>
+
+  <!-- ═══ DASHBOARD ═══ -->
+  <div id="page-dashboard" class="page active">
+
+    <div class="alert warning">
+      <i class="fas fa-exclamation-triangle"></i>
+      <div><strong>Critical alert:</strong> Patient Amara T. (Ward 3B) — Blood pressure at 180/115 mmHg. Immediate review requested.</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card teal">
+        <div class="stat-icon"><i class="fas fa-users"></i></div>
+        <div class="stat-label">Total Patients</div>
+        <div class="stat-value">1,847</div>
+        <div class="stat-change up"><i class="fas fa-arrow-up"></i> 12% from last month</div>
+      </div>
+      <div class="stat-card coral">
+        <div class="stat-icon"><i class="fas fa-bed"></i></div>
+        <div class="stat-label">Ward Occupancy</div>
+        <div class="stat-value">73%</div>
+        <div class="stat-change down"><i class="fas fa-arrow-down"></i> 5% capacity available</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+        <div class="stat-label">Today's Appointments</div>
+        <div class="stat-value">64</div>
+        <div class="stat-change up"><i class="fas fa-arrow-up"></i> 8 pending check-in</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon"><i class="fas fa-stethoscope"></i></div>
+        <div class="stat-label">Doctors On-Duty</div>
+        <div class="stat-value">18</div>
+        <div class="stat-change up"><i class="fas fa-circle" style="font-size:8px"></i> 4 in Emergency</div>
+      </div>
+    </div>
+
+    <div class="grid-65">
+      <!-- Patient Activity Chart -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Patient Admissions — Weekly</div>
+            <div class="card-subtitle">Jan–Jun 2026 · Outpatient vs Inpatient</div>
+          </div>
+          <button class="btn btn-outline btn-sm"><i class="fas fa-download"></i> Export</button>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;gap:16px;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray-600);">
+              <span style="width:12px;height:12px;border-radius:3px;background:var(--teal);display:inline-block;"></span>Inpatient
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray-600);">
+              <span style="width:12px;height:12px;border-radius:3px;background:var(--gray-200);display:inline-block;"></span>Outpatient
+            </div>
+          </div>
+          <div class="chart-bars">
+            <div class="bar-group">
+              <div class="bar-wrap"><div class="bar" style="height:60%;background:var(--teal);"></div><div class="bar" style="height:82%;background:var(--gray-200);"></div></div>
+              <div class="bar-label">Jan</div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-wrap"><div class="bar" style="height:75%;background:var(--teal);"></div><div class="bar" style="height:90%;background:var(--gray-200);"></div></div>
+              <div class="bar-label">Feb</div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-wrap"><div class="bar" style="height:55%;background:var(--teal);"></div><div class="bar" style="height:70%;background:var(--gray-200);"></div></div>
+              <div class="bar-label">Mar</div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-wrap"><div class="bar" style="height:85%;background:var(--teal);"></div><div class="bar" style="height:95%;background:var(--gray-200);"></div></div>
+              <div class="bar-label">Apr</div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-wrap"><div class="bar" style="height:70%;background:var(--teal);"></div><div class="bar" style="height:85%;background:var(--gray-200);"></div></div>
+              <div class="bar-label">May</div>
+            </div>
+            <div class="bar-group">
+              <div class="bar-wrap"><div class="bar" style="height:100%;background:var(--teal);"></div><div class="bar" style="height:78%;background:var(--gray-200);"></div></div>
+              <div class="bar-label">Jun</div>
+            </div>
+          </div>
+          <div style="margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+            <div style="text-align:center;padding:10px;background:var(--teal-soft);border-radius:8px;">
+              <div style="font-size:18px;font-weight:700;color:var(--teal);">342</div>
+              <div style="font-size:11px;color:var(--gray-400);">This Week</div>
+            </div>
+            <div style="text-align:center;padding:10px;background:var(--gray-50);border-radius:8px;">
+              <div style="font-size:18px;font-weight:700;color:var(--navy);">28</div>
+              <div style="font-size:11px;color:var(--gray-400);">Avg/Day</div>
+            </div>
+            <div style="text-align:center;padding:10px;background:var(--green-soft);border-radius:8px;">
+              <div style="font-size:18px;font-weight:700;color:var(--green);">96%</div>
+              <div style="font-size:11px;color:var(--gray-400);">Discharged</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar widgets -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <!-- Dept distribution -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Dept. Distribution</div>
+          </div>
+          <div class="card-body">
+            <div style="display:flex;align-items:center;gap:20px;">
+              <div class="donut-wrap">
+                <svg viewBox="0 0 100 100" style="transform:rotate(-90deg)">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--gray-100)" stroke-width="12"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--teal)" stroke-width="12" stroke-dasharray="88 163" stroke-linecap="round"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--coral)" stroke-width="12" stroke-dasharray="49 202" stroke-dashoffset="-88" stroke-linecap="round"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--amber)" stroke-width="12" stroke-dasharray="32 219" stroke-dashoffset="-137" stroke-linecap="round"/>
+                </svg>
+                <div class="donut-center">
+                  <div class="big">251</div>
+                  <div class="small">patients</div>
+                </div>
+              </div>
+              <div style="flex:1;font-size:12px;display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;justify-content:space-between;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;background:var(--teal);border-radius:50%;display:inline-block;"></span>General</span><strong>35%</strong></div>
+                <div style="display:flex;justify-content:space-between;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;background:var(--coral);border-radius:50%;display:inline-block;"></span>Emergency</span><strong>19%</strong></div>
+                <div style="display:flex;justify-content:space-between;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;background:var(--amber);border-radius:50%;display:inline-block;"></span>Pediatrics</span><strong>13%</strong></div>
+                <div style="display:flex;justify-content:space-between;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;background:var(--gray-200);border-radius:50%;display:inline-block;"></span>Others</span><strong>33%</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mini Calendar -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">May 2026</div>
+            <div style="display:flex;gap:8px;">
+              <div class="icon-btn" style="width:28px;height:28px;font-size:12px;border-radius:6px;"><i class="fas fa-chevron-left"></i></div>
+              <div class="icon-btn" style="width:28px;height:28px;font-size:12px;border-radius:6px;"><i class="fas fa-chevron-right"></i></div>
+            </div>
+          </div>
+          <div class="card-body mini-cal">
+            <div class="cal-grid">
+              <div class="cal-day-label">Su</div><div class="cal-day-label">Mo</div><div class="cal-day-label">Tu</div><div class="cal-day-label">We</div><div class="cal-day-label">Th</div><div class="cal-day-label">Fr</div><div class="cal-day-label">Sa</div>
+              <div class="cal-day other-month">27</div><div class="cal-day other-month">28</div><div class="cal-day other-month">29</div><div class="cal-day other-month">30</div><div class="cal-day has-appt">1</div><div class="cal-day has-appt">2</div><div class="cal-day">3</div>
+              <div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day today">6</div><div class="cal-day has-appt">7</div><div class="cal-day has-appt">8</div><div class="cal-day">9</div><div class="cal-day">10</div>
+              <div class="cal-day">11</div><div class="cal-day has-appt">12</div><div class="cal-day">13</div><div class="cal-day">14</div><div class="cal-day">15</div><div class="cal-day has-appt">16</div><div class="cal-day">17</div>
+              <div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day has-appt">22</div><div class="cal-day">23</div><div class="cal-day">24</div>
+              <div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:6px;font-size:11px;align-items:center;color:var(--gray-400);">
+              <span style="width:8px;height:8px;background:var(--teal);border-radius:50%;"></span> Has appointments
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent activity + Pending -->
+    <div class="grid-2">
+      <!-- Recent Activity -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Activity</div>
+          <span class="badge info"><i class="fas fa-circle" style="font-size:7px;animation:pulse 1.8s infinite;"></i> Live</span>
+        </div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-dot teal"></div>
+              <div class="timeline-time">2 min ago</div>
+              <div class="timeline-text"><strong>Dr. Lemlem A.</strong> uploaded lab results for Patient #MC-00412</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot coral"></div>
+              <div class="timeline-time">14 min ago</div>
+              <div class="timeline-text"><strong>Emergency admission</strong> — Habtamu G., 54M — Chest pain protocol initiated</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot amber"></div>
+              <div class="timeline-time">32 min ago</div>
+              <div class="timeline-text"><strong>Invoice #INV-2026-0894</strong> paid via Chapa — ETB 3,420</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot green"></div>
+              <div class="timeline-time">1 hr ago</div>
+              <div class="timeline-text"><strong>Patient discharged</strong> — Selam B. (Ward 2A) — follow-up scheduled May 20</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot teal"></div>
+              <div class="timeline-time">2 hr ago</div>
+              <div class="timeline-text"><strong>Prescription issued</strong> — Amoxicillin 500mg for Patient #MC-00389 by Dr. Kidane</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending Actions -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Pending Actions</div>
+          <span class="badge danger">7 urgent</span>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--coral-soft);border-radius:10px;border-left:3px solid var(--coral);">
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:#9B1C1C;">Lab review required</div>
+                <div style="font-size:12px;color:#C53030;">Patient #MC-00412 · CBC critical values</div>
+              </div>
+              <button class="btn btn-danger btn-sm">Review</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--amber-soft);border-radius:10px;border-left:3px solid var(--amber);">
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:#92400E;">Bed assignment pending</div>
+                <div style="font-size:12px;color:#B45309;">3 admitted patients await beds (Ward 4)</div>
+              </div>
+              <button class="btn btn-sm btn-outline">Assign</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--teal-soft);border-radius:10px;border-left:3px solid var(--teal);">
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:#0D6E6A;">Prescription approval</div>
+                <div style="font-size:12px;color:#0F766E;">4 prescriptions await senior sign-off</div>
+              </div>
+              <button class="btn btn-sm btn-outline">Approve</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--gray-50);border-radius:10px;border-left:3px solid var(--gray-300);">
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:var(--navy);">Insurance verification</div>
+                <div style="font-size:12px;color:var(--gray-400);">6 claims pending CBHI verification</div>
+              </div>
+              <button class="btn btn-sm btn-outline">View</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PATIENTS PAGE ═══ -->
+  <div id="page-patients" class="page">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Patient Registry</div>
+        <div class="section-subtitle">1,847 total patients · 251 currently admitted</div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-outline"><i class="fas fa-filter"></i> Filter</button>
+        <button class="btn btn-primary" onclick="openModal('modal-new-patient')"><i class="fas fa-plus"></i> Register Patient</button>
+      </div>
+    </div>
+
+    <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);">
+      <div class="stat-card teal"><div class="stat-icon"><i class="fas fa-procedures"></i></div><div class="stat-label">Inpatient</div><div class="stat-value">251</div><div class="stat-change up"><i class="fas fa-bed"></i> 73% occupancy</div></div>
+      <div class="stat-card coral"><div class="stat-icon"><i class="fas fa-user-clock"></i></div><div class="stat-label">Outpatient Today</div><div class="stat-value">64</div><div class="stat-change up"><i class="fas fa-arrow-up"></i> 14% vs yesterday</div></div>
+      <div class="stat-card amber"><div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div><div class="stat-label">Critical Cases</div><div class="stat-value">7</div><div class="stat-change down"><i class="fas fa-exclamation"></i> 3 in ICU</div></div>
+      <div class="stat-card green"><div class="stat-icon"><i class="fas fa-sign-out-alt"></i></div><div class="stat-label">Discharged Today</div><div class="stat-value">12</div><div class="stat-change up"><i class="fas fa-check"></i> All scheduled</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Patient List</div>
+        </div>
+        <div class="tabs" style="margin-bottom:0;">
+          <button class="tab active" onclick="filterPatients('all',this)">All</button>
+          <button class="tab" onclick="filterPatients('admitted',this)">Admitted</button>
+          <button class="tab" onclick="filterPatients('outpatient',this)">Outpatient</button>
+          <button class="tab" onclick="filterPatients('critical',this)">Critical</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-wrap">
+          <table id="patient-table">
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>ID</th>
+                <th>Age / Gender</th>
+                <th>Department</th>
+                <th>Status</th>
+                <th>Doctor</th>
+                <th>Admitted</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="patient-tbody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ APPOINTMENTS ═══ -->
+  <div id="page-appointments" class="page">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Appointment Management</div>
+        <div class="section-subtitle">Today: May 6, 2026 · 64 scheduled</div>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('modal-new-appt')"><i class="fas fa-plus"></i> Book Appointment</button>
+    </div>
+
+    <div class="grid-65">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Today's Schedule</div>
+          <div style="display:flex;gap:8px;">
+            <span class="badge success"><i class="fas fa-check-circle"></i> 38 confirmed</span>
+            <span class="badge warning">8 pending</span>
+            <span class="badge danger">4 no-show</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Time</th><th>Patient</th><th>Doctor</th><th>Type</th><th>Status</th><th>Room</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>08:00</strong></td><td><div class="patient-card"><div class="patient-avatar" style="background:#0EA5A0;">AT</div><div><div class="patient-name">Amara Teklehaimanot</div><div class="patient-id">#MC-00389</div></div></div></td><td>Dr. Lemlem A.</td><td><span class="badge info">Cardiology</span></td><td><span class="badge success">Completed</span></td><td>C-04</td></tr>
+                <tr><td><strong>09:30</strong></td><td><div class="patient-card"><div class="patient-avatar" style="background:#E8553A;">HG</div><div><div class="patient-name">Habtamu Gebre</div><div class="patient-id">#MC-00412</div></div></div></td><td>Dr. Kidane B.</td><td><span class="badge warning">Emergency</span></td><td><span class="badge warning">In Progress</span></td><td>ER-1</td></tr>
+                <tr><td><strong>10:00</strong></td><td><div class="patient-card"><div class="patient-avatar" style="background:#8B5CF6;">SB</div><div><div class="patient-name">Selam Berhe</div><div class="patient-id">#MC-00356</div></div></div></td><td>Dr. Miriam H.</td><td><span class="badge neutral">General</span></td><td><span class="badge success">Completed</span></td><td>G-11</td></tr>
+                <tr><td><strong>11:00</strong></td><td><div class="patient-card"><div class="patient-avatar" style="background:#F59E0B;">YA</div><div><div class="patient-name">Yohannes Alemu</div><div class="patient-id">#MC-00421</div></div></div></td><td>Dr. Tigist F.</td><td><span class="badge purple">Pediatrics</span></td><td><span class="badge info">Waiting</span></td><td>P-03</td></tr>
+                <tr><td><strong>13:00</strong></td><td><div class="patient-card"><div class="patient-avatar" style="background:#10B981;">MW</div><div><div class="patient-name">Meron Woldu</div><div class="patient-id">#MC-00398</div></div></div></td><td>Dr. Lemlem A.</td><td><span class="badge info">Follow-up</span></td><td><span class="badge neutral">Scheduled</span></td><td>C-02</td></tr>
+                <tr><td><strong>14:30</strong></td><td><div class="patient-card"><div class="patient-avatar" style="background:#0B1C3A;">TZ</div><div><div class="patient-name">Tsehay Zerihun</div><div class="patient-id">#MC-00445</div></div></div></td><td>Dr. Kidane B.</td><td><span class="badge warning">Surgery</span></td><td><span class="badge neutral">Scheduled</span></td><td>OR-2</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Available Slots — May 7</div></div>
+          <div class="card-body">
+            <div style="font-size:12px;color:var(--gray-400);margin-bottom:10px;">Dr. Lemlem Araya · Cardiology</div>
+            <div class="slot-grid">
+              <div class="slot booked">08:00</div>
+              <div class="slot booked">08:30</div>
+              <div class="slot">09:00</div>
+              <div class="slot selected">09:30</div>
+              <div class="slot">10:00</div>
+              <div class="slot">10:30</div>
+              <div class="slot booked">11:00</div>
+              <div class="slot">11:30</div>
+              <div class="slot">13:00</div>
+              <div class="slot">13:30</div>
+              <div class="slot booked">14:00</div>
+              <div class="slot">14:30</div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:12px;" onclick="showToast('Appointment booked for 09:30 — May 7')">
+              <i class="fas fa-calendar-check"></i> Confirm Booking
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Queue Status</div></div>
+          <div class="card-body">
+            <div style="margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+                <span>General OPD</span><span style="font-weight:600;color:var(--coral);">24 waiting</span>
+              </div>
+              <div class="progress"><div class="progress-fill" style="width:80%;background:var(--coral);"></div></div>
+            </div>
+            <div style="margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+                <span>Cardiology</span><span style="font-weight:600;color:var(--amber);">8 waiting</span>
+              </div>
+              <div class="progress"><div class="progress-fill" style="width:40%;background:var(--amber);"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+                <span>Pediatrics</span><span style="font-weight:600;color:var(--green);">3 waiting</span>
+              </div>
+              <div class="progress"><div class="progress-fill" style="width:15%;background:var(--green);"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ EHR RECORDS ═══ -->
+  <div id="page-ehr" class="page">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Electronic Health Records</div>
+        <div class="section-subtitle">Viewing: Habtamu Gebre · #MC-00412</div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-outline"><i class="fas fa-print"></i> Print Record</button>
+        <button class="btn btn-primary"><i class="fas fa-edit"></i> Edit Record</button>
+      </div>
+    </div>
+
+    <!-- Patient Header -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-body" style="padding:20px 24px;">
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+          <div class="patient-avatar" style="width:70px;height:70px;font-size:24px;background:linear-gradient(135deg,var(--coral),var(--navy-light));border-radius:16px;">HG</div>
+          <div style="flex:1;">
+            <div style="font-family:var(--font-serif);font-size:22px;font-style:italic;color:var(--navy);">Habtamu Gebre</div>
+            <div style="display:flex;gap:16px;margin-top:6px;flex-wrap:wrap;">
+              <span style="font-size:13px;color:var(--gray-400);"><i class="fas fa-id-card"></i> #MC-00412</span>
+              <span style="font-size:13px;color:var(--gray-400);"><i class="fas fa-birthday-cake"></i> 54 years · Male</span>
+              <span style="font-size:13px;color:var(--gray-400);"><i class="fas fa-tint"></i> Blood Type: A+</span>
+              <span style="font-size:13px;color:var(--gray-400);"><i class="fas fa-phone"></i> +251 91 234 5678</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <div style="text-align:center;padding:12px 20px;background:var(--coral-soft);border-radius:10px;">
+              <div style="font-size:11px;color:var(--gray-400);">Status</div>
+              <div style="font-size:14px;font-weight:700;color:var(--coral);">Emergency</div>
+            </div>
+            <div style="text-align:center;padding:12px 20px;background:var(--teal-soft);border-radius:10px;">
+              <div style="font-size:11px;color:var(--gray-400);">Ward</div>
+              <div style="font-size:14px;font-weight:700;color:var(--teal);">ER-1</div>
+            </div>
+            <div style="text-align:center;padding:12px 20px;background:var(--gray-50);border-radius:10px;">
+              <div style="font-size:11px;color:var(--gray-400);">Admitted</div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy);">Today</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-65">
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <!-- Vital Signs -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Vital Signs</div>
+            <span class="badge danger"><i class="fas fa-exclamation-triangle"></i> 2 Critical</span>
+          </div>
+          <div class="card-body">
+            <div class="vitals-grid">
+              <div class="vital-box">
+                <div class="vital-label"><i class="fas fa-heartbeat"></i> Heart Rate</div>
+                <div class="vital-value">112 <span class="vital-unit">bpm</span></div>
+                <div class="vital-status warning"><i class="fas fa-arrow-up"></i> Elevated</div>
+              </div>
+              <div class="vital-box" style="border:1.5px solid var(--coral);background:var(--coral-soft);">
+                <div class="vital-label"><i class="fas fa-tachometer-alt"></i> Blood Pressure</div>
+                <div class="vital-value" style="color:var(--coral);">180/115 <span class="vital-unit" style="font-size:10px;">mmHg</span></div>
+                <div class="vital-status critical"><i class="fas fa-exclamation"></i> Critical — High</div>
+              </div>
+              <div class="vital-box">
+                <div class="vital-label"><i class="fas fa-thermometer-half"></i> Temperature</div>
+                <div class="vital-value">37.8 <span class="vital-unit">°C</span></div>
+                <div class="vital-status normal"><i class="fas fa-check"></i> Normal</div>
+              </div>
+              <div class="vital-box">
+                <div class="vital-label"><i class="fas fa-lungs"></i> SpO₂</div>
+                <div class="vital-value" style="color:var(--amber);">94 <span class="vital-unit">%</span></div>
+                <div class="vital-status warning"><i class="fas fa-arrow-down"></i> Low–Normal</div>
+              </div>
+              <div class="vital-box">
+                <div class="vital-label"><i class="fas fa-wind"></i> Resp. Rate</div>
+                <div class="vital-value">22 <span class="vital-unit">/min</span></div>
+                <div class="vital-status warning"><i class="fas fa-arrow-up"></i> Slightly high</div>
+              </div>
+              <div class="vital-box">
+                <div class="vital-label"><i class="fas fa-weight"></i> BMI</div>
+                <div class="vital-value">27.4</div>
+                <div class="vital-status warning">Overweight</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Current Medications -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Active Prescriptions</div>
+            <button class="btn btn-outline btn-sm" onclick="openModal('modal-prescription')"><i class="fas fa-plus"></i> Add</button>
+          </div>
+          <div class="card-body">
+            <table>
+              <thead><tr><th>Medication</th><th>Dose</th><th>Frequency</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Amlodipine</strong><div style="font-size:11px;color:var(--gray-400);">Calcium channel blocker</div></td><td>10mg</td><td>Once daily</td><td><span class="badge success">Active</span></td></tr>
+                <tr><td><strong>Metoprolol</strong><div style="font-size:11px;color:var(--gray-400);">Beta blocker</div></td><td>50mg</td><td>Twice daily</td><td><span class="badge success">Active</span></td></tr>
+                <tr><td><strong>Aspirin</strong><div style="font-size:11px;color:var(--gray-400);">Antiplatelet</div></td><td>100mg</td><td>Once daily</td><td><span class="badge warning">Pending</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Diagnosis -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Diagnosis & Notes</div></div>
+          <div class="card-body">
+            <div style="padding:14px;background:var(--gray-50);border-radius:10px;margin-bottom:12px;">
+              <div style="font-size:11px;color:var(--gray-400);margin-bottom:4px;">PRIMARY DIAGNOSIS</div>
+              <div style="font-size:14px;font-weight:600;color:var(--navy);">Hypertensive Emergency (I10)</div>
+              <div style="font-size:13px;color:var(--gray-600);margin-top:4px;">Presenting with acute chest pain, headache, and BP ≥180/120. Rule out end-organ damage.</div>
+            </div>
+            <div style="padding:14px;background:var(--amber-soft);border-radius:10px;">
+              <div style="font-size:11px;color:var(--gray-400);margin-bottom:4px;">ALLERGIES</div>
+              <div style="font-size:13px;font-weight:600;color:#92400E;"><i class="fas fa-exclamation-triangle"></i> Penicillin — Anaphylaxis</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lab results -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Latest Lab Results</div><span class="badge warning">2 Abnormal</span></div>
+          <div class="card-body">
+            <div class="lab-row"><div><div class="lab-name">Hemoglobin</div><div class="lab-ref">Ref: 13.5–17.5 g/dL</div></div><div class="lab-val normal">15.2 g/dL</div></div>
+            <div class="lab-row"><div><div class="lab-name">Creatinine</div><div class="lab-ref">Ref: 0.7–1.2 mg/dL</div></div><div class="lab-val high">1.8 mg/dL ↑</div></div>
+            <div class="lab-row"><div><div class="lab-name">Troponin I</div><div class="lab-ref">Ref: &lt;0.04 ng/mL</div></div><div class="lab-val high">0.12 ng/mL ↑</div></div>
+            <div class="lab-row"><div><div class="lab-name">Potassium</div><div class="lab-ref">Ref: 3.5–5.0 mEq/L</div></div><div class="lab-val normal">4.1 mEq/L</div></div>
+            <div class="lab-row"><div><div class="lab-name">Cholesterol</div><div class="lab-ref">Ref: &lt;200 mg/dL</div></div><div class="lab-val low">238 mg/dL</div></div>
+            <div class="lab-row"><div><div class="lab-name">Glucose (FBS)</div><div class="lab-ref">Ref: 70–100 mg/dL</div></div><div class="lab-val normal">88 mg/dL</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Clinical History</div></div>
+          <div class="card-body">
+            <div class="timeline" style="padding-left:20px;">
+              <div class="timeline-item"><div class="timeline-dot coral"></div><div class="timeline-time">Today — Emergency</div><div class="timeline-text">Admitted with chest pain, hypertensive crisis</div></div>
+              <div class="timeline-item"><div class="timeline-dot teal"></div><div class="timeline-time">Mar 2026</div><div class="timeline-text">Follow-up — BP monitoring, Amlodipine adjusted</div></div>
+              <div class="timeline-item"><div class="timeline-dot amber"></div><div class="timeline-time">Jan 2026</div><div class="timeline-text">Diagnosed — Stage 2 Hypertension</div></div>
+              <div class="timeline-item"><div class="timeline-dot green"></div><div class="timeline-time">2024</div><div class="timeline-text">Annual physical — no significant findings</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ LAB PAGE ═══ -->
+  <div id="page-lab" class="page">
+    <div class="section-header">
+      <div><div class="section-title">Lab & Diagnostics</div><div class="section-subtitle">Pending orders, results upload & management</div></div>
+      <button class="btn btn-primary" onclick="openModal('modal-lab-order')"><i class="fas fa-plus"></i> New Lab Order</button>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card coral"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-label">Pending Results</div><div class="stat-value">5</div><div class="stat-change down">Awaiting processing</div></div>
+      <div class="stat-card teal"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-label">Completed Today</div><div class="stat-value">38</div><div class="stat-change up">+6 from yesterday</div></div>
+      <div class="stat-card amber"><div class="stat-icon"><i class="fas fa-exclamation"></i></div><div class="stat-label">Critical Values</div><div class="stat-value">3</div><div class="stat-change down">Needs doctor review</div></div>
+      <div class="stat-card green"><div class="stat-icon"><i class="fas fa-vials"></i></div><div class="stat-label">Samples Collected</div><div class="stat-value">52</div><div class="stat-change up">This morning</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Lab Orders Queue</div></div>
+      <div class="card-body">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Order ID</th><th>Patient</th><th>Test</th><th>Ordered By</th><th>Priority</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td><code style="font-size:12px;background:var(--gray-50);padding:2px 6px;border-radius:4px;">LAB-2026-0441</code></td><td><div class="patient-card"><div class="patient-avatar" style="background:var(--coral);font-size:12px;">HG</div><div><div class="patient-name">Habtamu Gebre</div><div class="patient-id">#MC-00412</div></div></div></td><td>Troponin, CBC, CMP</td><td>Dr. Kidane B.</td><td><span class="badge danger">STAT</span></td><td><span class="badge warning">Processing</span></td><td><button class="btn btn-sm btn-outline" onclick="showToast('Results upload panel opened')">Upload</button></td></tr>
+              <tr><td><code style="font-size:12px;background:var(--gray-50);padding:2px 6px;border-radius:4px;">LAB-2026-0440</code></td><td><div class="patient-card"><div class="patient-avatar" style="background:var(--teal);font-size:12px;">AT</div><div><div class="patient-name">Amara Teklehaimanot</div><div class="patient-id">#MC-00389</div></div></div></td><td>Lipid Panel, HbA1c</td><td>Dr. Lemlem A.</td><td><span class="badge warning">Routine</span></td><td><span class="badge success">Complete</span></td><td><button class="btn btn-sm btn-primary" onclick="showToast('Results viewed')">View</button></td></tr>
+              <tr><td><code style="font-size:12px;background:var(--gray-50);padding:2px 6px;border-radius:4px;">LAB-2026-0438</code></td><td><div class="patient-card"><div class="patient-avatar" style="background:var(--purple);font-size:12px;">SB</div><div><div class="patient-name">Selam Berhe</div><div class="patient-id">#MC-00356</div></div></div></td><td>Urinalysis, Culture</td><td>Dr. Miriam H.</td><td><span class="badge neutral">Normal</span></td><td><span class="badge info">Pending</span></td><td><button class="btn btn-sm btn-outline">Upload</button></td></tr>
+              <tr><td><code style="font-size:12px;background:var(--gray-50);padding:2px 6px;border-radius:4px;">LAB-2026-0435</code></td><td><div class="patient-card"><div class="patient-avatar" style="background:var(--amber);font-size:12px;">YA</div><div><div class="patient-name">Yohannes Alemu</div><div class="patient-id">#MC-00421</div></div></div></td><td>CBC, Malaria RDT</td><td>Dr. Tigist F.</td><td><span class="badge danger">STAT</span></td><td><span class="badge warning">Processing</span></td><td><button class="btn btn-sm btn-outline">Upload</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PHARMACY ═══ -->
+  <div id="page-pharmacy" class="page">
+    <div class="section-header">
+      <div><div class="section-title">Pharmacy Management</div><div class="section-subtitle">Drug inventory, dispensing & stock control</div></div>
+      <button class="btn btn-primary"><i class="fas fa-plus"></i> Add Stock</button>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card teal"><div class="stat-icon"><i class="fas fa-capsules"></i></div><div class="stat-label">Total Drugs</div><div class="stat-value">486</div><div class="stat-change up">SKUs in stock</div></div>
+      <div class="stat-card coral"><div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="stat-label">Low Stock</div><div class="stat-value">14</div><div class="stat-change down">Reorder required</div></div>
+      <div class="stat-card amber"><div class="stat-icon"><i class="fas fa-prescription-bottle"></i></div><div class="stat-label">Dispensed Today</div><div class="stat-value">128</div><div class="stat-change up">+18% vs avg</div></div>
+      <div class="stat-card green"><div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div><div class="stat-label">Revenue Today</div><div class="stat-value">ETB 12,400</div><div class="stat-change up">+5%</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Prescription Queue</div><span class="badge warning">4 pending</span></div>
+        <div class="card-body">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Rx ID</th><th>Patient</th><th>Medication</th><th>Doctor</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td><code style="font-size:12px;background:var(--gray-50);padding:2px 6px;border-radius:4px;">Rx-0894</code></td><td>Habtamu G.</td><td>Amlodipine 10mg × 30</td><td>Dr. Kidane</td><td><button class="btn btn-sm btn-primary" onclick="showToast('Dispensed: Amlodipine 10mg')">Dispense</button></td></tr>
+                <tr><td><code style="font-size:12px;background:var(--gray-50);padding:2px 6px;border-radius:4px;">Rx-0893</code></td><td>Amara T.</td><td>Metformin 500mg × 60</td><td>Dr. Lemlem</td><td><button class="btn btn-sm btn-primary" onclick="showToast('Dispensed: Metformin 500mg')">Dispense</button></td></tr>
+                <tr><td><code style="font-size:12px;background:var(--gray-50);padding:2px 6px;border-radius:4px;">Rx-0891</code></td><td>Selam B.</td><td>Amoxicillin 500mg × 21</td><td>Dr. Miriam</td><td><button class="btn btn-sm btn-outline" onclick="showToast('Rx-0891 flagged — low stock')">Check Stock</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Stock Levels</div></div>
+        <div class="card-body">
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div class="stock-bar-wrap"><div class="stock-name">Amlodipine 10mg</div><div class="stock-progress"><div class="progress-fill" style="width:85%;background:var(--green);"></div></div><div class="stock-qty">850 tabs</div></div>
+            <div class="stock-bar-wrap"><div class="stock-name">Metformin 500mg</div><div class="stock-progress"><div class="progress-fill" style="width:60%;background:var(--teal);"></div></div><div class="stock-qty">600 tabs</div></div>
+            <div class="stock-bar-wrap"><div class="stock-name">Amoxicillin 500mg</div><div class="stock-progress"><div class="progress-fill" style="width:15%;background:var(--coral);"></div></div><div class="stock-qty" style="color:var(--coral);">45 caps ⚠</div></div>
+            <div class="stock-bar-wrap"><div class="stock-name">Aspirin 100mg</div><div class="stock-progress"><div class="progress-fill" style="width:70%;background:var(--teal);"></div></div><div class="stock-qty">700 tabs</div></div>
+            <div class="stock-bar-wrap"><div class="stock-name">Atorvastatin 20mg</div><div class="stock-progress"><div class="progress-fill" style="width:30%;background:var(--amber);"></div></div><div class="stock-qty" style="color:var(--amber);">120 tabs ⚠</div></div>
+            <div class="stock-bar-wrap"><div class="stock-name">Metoprolol 50mg</div><div class="stock-progress"><div class="progress-fill" style="width:55%;background:var(--teal);"></div></div><div class="stock-qty">220 tabs</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ BILLING ═══ -->
+  <div id="page-billing" class="page">
+    <div class="section-header">
+      <div><div class="section-title">Billing & Payments</div><div class="section-subtitle">Invoices, insurance claims & revenue</div></div>
+      <button class="btn btn-primary" onclick="openModal('modal-invoice')"><i class="fas fa-plus"></i> Create Invoice</button>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card green"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-label">Revenue Today</div><div class="stat-value">ETB 48,200</div><div class="stat-change up">+12% vs avg</div></div>
+      <div class="stat-card coral"><div class="stat-icon"><i class="fas fa-file-invoice"></i></div><div class="stat-label">Unpaid Invoices</div><div class="stat-value">34</div><div class="stat-change down">ETB 127,400 total</div></div>
+      <div class="stat-card amber"><div class="stat-icon"><i class="fas fa-shield-alt"></i></div><div class="stat-label">Insurance Claims</div><div class="stat-value">6</div><div class="stat-change down">Awaiting CBHI</div></div>
+      <div class="stat-card teal"><div class="stat-icon"><i class="fas fa-coins"></i></div><div class="stat-label">This Month</div><div class="stat-value">ETB 1.2M</div><div class="stat-change up">+8% vs last month</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Recent Invoices</div></div>
+      <div class="card-body">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Invoice</th><th>Patient</th><th>Services</th><th>Amount</th><th>Payment</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td><code style="font-size:12px;background:var(--gray-50);padding:2px 6px;border-radius:4px;">INV-2026-0894</code></td><td>Amara Teklehaimanot</td><td>Consultation + Lab</td><td><strong>ETB 3,420</strong></td><td><span class="badge info">Chapa</span></td><td><span class="badge success">Paid</span></td><td><button class="btn btn-sm btn-outline">Receipt</button></td></tr>
+              <tr><td><code style="font-size:12px;background:var(--gray-50);padding:2px 6px;border-radius:4px;">INV-2026-0893</code></td><td>Habtamu Gebre</td><td>Emergency + Meds + Ward</td><td><strong>ETB 12,800</strong></td><td><span class="badge neutral">CBHI</span></td><td><span class="badge warning">Pending</span></td><td><button class="btn btn-sm btn-outline">Submit</button></td></tr>
+              <tr><td><code style="font-size:12px;background:var(--gray-50);padding:2px 6px;border-radius:4px;">INV-2026-0891</code></td><td>Selam Berhe</td><td>OPD + Pharmacy</td><td><strong>ETB 1,650</strong></td><td><span class="badge info">Telebirr</span></td><td><span class="badge success">Paid</span></td><td><button class="btn btn-sm btn-outline">Receipt</button></td></tr>
+              <tr><td><code style="font-size:12px;background:var(--gray-50);padding:2px 6px;border-radius:4px;">INV-2026-0889</code></td><td>Tsehay Zerihun</td><td>Surgery + Anesthesia</td><td><strong>ETB 28,500</strong></td><td><span class="badge neutral">Insurance</span></td><td><span class="badge danger">Overdue</span></td><td><button class="btn btn-sm btn-danger" onclick="showToast('Payment reminder sent')">Remind</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STAFF ═══ -->
+  <div id="page-staff" class="page">
+    <div class="section-header">
+      <div><div class="section-title">Staff & Doctors</div><div class="section-subtitle">18 on-duty · 42 total staff</div></div>
+      <button class="btn btn-primary"><i class="fas fa-plus"></i> Add Staff</button>
+    </div>
+    <div class="grid-3">
+      <div class="doctor-card"><div class="d-avatar" style="background:linear-gradient(135deg,var(--teal),var(--navy-light));">LA</div><div><div class="d-name">Dr. Lemlem Araya</div><div class="d-spec">Cardiology · 12 yrs exp</div><div class="d-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> 4.9</div></div><span class="badge success" style="margin-left:auto;">On-Duty</span></div>
+      <div class="doctor-card"><div class="d-avatar" style="background:linear-gradient(135deg,var(--coral),#7B1FA2);">KB</div><div><div class="d-name">Dr. Kidane Berhe</div><div class="d-spec">Emergency Medicine · 8 yrs</div><div class="d-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i> 4.7</div></div><span class="badge success" style="margin-left:auto;">On-Duty</span></div>
+      <div class="doctor-card"><div class="d-avatar" style="background:linear-gradient(135deg,var(--purple),var(--coral));">MH</div><div><div class="d-name">Dr. Miriam Haile</div><div class="d-spec">Internal Medicine · 15 yrs</div><div class="d-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> 4.8</div></div><span class="badge neutral" style="margin-left:auto;">Off-Duty</span></div>
+      <div class="doctor-card"><div class="d-avatar" style="background:linear-gradient(135deg,var(--amber),var(--coral));">TF</div><div><div class="d-name">Dr. Tigist Fekadu</div><div class="d-spec">Pediatrics · 6 yrs exp</div><div class="d-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i> 4.3</div></div><span class="badge success" style="margin-left:auto;">On-Duty</span></div>
+      <div class="doctor-card"><div class="d-avatar" style="background:linear-gradient(135deg,var(--green),var(--navy));">AG</div><div><div class="d-name">Dr. Alemu Gebru</div><div class="d-spec">Surgery · 20 yrs exp</div><div class="d-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> 5.0</div></div><span class="badge success" style="margin-left:auto;">On-Duty</span></div>
+      <div class="doctor-card"><div class="d-avatar" style="background:linear-gradient(135deg,#06B6D4,var(--navy-light));">BT</div><div><div class="d-name">Dr. Bethel Tesfaye</div><div class="d-spec">Neurology · 9 yrs exp</div><div class="d-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i> 4.6</div></div><span class="badge warning" style="margin-left:auto;">On-Call</span></div>
+    </div>
+  </div>
+
+  <!-- ═══ NOTIFICATIONS ═══ -->
+  <div id="page-notifications" class="page">
+    <div class="section-header">
+      <div><div class="section-title">Notifications</div><div class="section-subtitle">8 unread alerts</div></div>
+      <button class="btn btn-outline" onclick="showToast('All notifications marked as read')">Mark all read</button>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="notif-item notif-unread">
+          <div class="notif-icon" style="background:var(--coral-soft);color:var(--coral);"><i class="fas fa-exclamation-triangle"></i></div>
+          <div><div class="notif-text"><strong>Critical BP Alert</strong> — Patient Amara T. (#MC-00389) blood pressure 180/115 mmHg. Immediate intervention required.</div><div class="notif-time">2 minutes ago</div></div>
+        </div>
+        <div class="notif-item notif-unread">
+          <div class="notif-icon" style="background:var(--amber-soft);color:var(--amber);"><i class="fas fa-pills"></i></div>
+          <div><div class="notif-text"><strong>Low Stock Alert</strong> — Amoxicillin 500mg below reorder threshold (45 units remaining). Auto-order triggered.</div><div class="notif-time">18 minutes ago</div></div>
+        </div>
+        <div class="notif-item notif-unread">
+          <div class="notif-icon" style="background:var(--teal-soft);color:var(--teal);"><i class="fas fa-flask"></i></div>
+          <div><div class="notif-text"><strong>Lab Results Ready</strong> — Troponin & CBC results for Patient Habtamu G. (#MC-00412) uploaded. Critical value: Troponin I elevated.</div><div class="notif-time">35 minutes ago</div></div>
+        </div>
+        <div class="notif-item notif-unread">
+          <div class="notif-icon" style="background:var(--green-soft);color:var(--green);"><i class="fas fa-money-bill-wave"></i></div>
+          <div><div class="notif-text"><strong>Payment Received</strong> — Invoice INV-2026-0894 paid by Amara T. via Chapa. ETB 3,420 cleared.</div><div class="notif-time">1 hour ago</div></div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon" style="background:var(--purple-soft);color:var(--purple);"><i class="fas fa-calendar-check"></i></div>
+          <div><div class="notif-text"><strong>Appointment Reminder</strong> — Dr. Alemu G. has surgery scheduled for Tsehay Z. at 14:30 today. Pre-op checklist pending.</div><div class="notif-time">2 hours ago</div></div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon" style="background:var(--gray-50);color:var(--gray-600);"><i class="fas fa-shield-alt"></i></div>
+          <div><div class="notif-text"><strong>Insurance Claim Update</strong> — CBHI claim #CBH-2026-0128 for Selam B. requires additional documentation. Deadline: May 9.</div><div class="notif-time">4 hours ago</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ API MONITOR ═══ -->
+  <div id="page-api" class="page">
+    <div class="section-header">
+      <div><div class="section-title">API Monitor & System Health</div><div class="section-subtitle">Real-time microservice status — MediCore v2.0 (Microservices)</div></div>
+      <span class="badge success"><span class="live-dot"></span>All Systems Operational</span>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card green"><div class="stat-icon"><i class="fas fa-server"></i></div><div class="stat-label">Uptime</div><div class="stat-value">99.97%</div><div class="stat-change up">≈ 0 downtime this month</div></div>
+      <div class="stat-card teal"><div class="stat-icon"><i class="fas fa-bolt"></i></div><div class="stat-label">Avg Response</div><div class="stat-value">48ms</div><div class="stat-change up">Well within 200ms SLA</div></div>
+      <div class="stat-card amber"><div class="stat-icon"><i class="fas fa-exchange-alt"></i></div><div class="stat-label">Requests/min</div><div class="stat-value">1,240</div><div class="stat-change up">Peak handled</div></div>
+      <div class="stat-card coral"><div class="stat-icon"><i class="fas fa-bug"></i></div><div class="stat-label">Error Rate</div><div class="stat-value">0.03%</div><div class="stat-change up">Well within 0.5% target</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Microservice Health</div></div>
+        <div class="card-body">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--gray-50);border-radius:10px;">
+              <span style="width:10px;height:10px;background:var(--green);border-radius:50%;flex-shrink:0;"></span>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;">Patient Service</div><div style="font-size:11px;color:var(--gray-400);">Node.js · Port 3001 · 2 instances</div></div>
+              <div class="api-tag"><span class="api-method">GET</span>/api/patients</div>
+              <span class="badge success">32ms</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--gray-50);border-radius:10px;">
+              <span style="width:10px;height:10px;background:var(--green);border-radius:50%;flex-shrink:0;"></span>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;">EHR Service</div><div style="font-size:11px;color:var(--gray-400);">Node.js · Port 3002 · 3 instances</div></div>
+              <div class="api-tag"><span class="api-method">GET</span>/api/ehr/:id</div>
+              <span class="badge success">44ms</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--gray-50);border-radius:10px;">
+              <span style="width:10px;height:10px;background:var(--green);border-radius:50%;flex-shrink:0;"></span>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;">Billing Service</div><div style="font-size:11px;color:var(--gray-400);">Node.js · Port 3003 · 1 instance</div></div>
+              <div class="api-tag"><span class="api-method">POST</span>/api/billing</div>
+              <span class="badge success">61ms</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--gray-50);border-radius:10px;">
+              <span style="width:10px;height:10px;background:var(--green);border-radius:50%;flex-shrink:0;"></span>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;">Lab Service</div><div style="font-size:11px;color:var(--gray-400);">Node.js · Port 3004 · 2 instances</div></div>
+              <div class="api-tag"><span class="api-method">POST</span>/api/lab/results</div>
+              <span class="badge success">38ms</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--amber-soft);border-radius:10px;border:1px solid #FDE68A;">
+              <span style="width:10px;height:10px;background:var(--amber);border-radius:50%;flex-shrink:0;"></span>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;">Notification Service</div><div style="font-size:11px;color:var(--gray-400);">Node.js · Port 3005 · 1 instance</div></div>
+              <div class="api-tag"><span class="api-method">POST</span>/api/notify</div>
+              <span class="badge warning">210ms</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Recent API Calls</div></div>
+        <div class="card-body" style="font-size:12px;font-family:monospace;">
+          <div style="background:#0B1C3A;border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px;">
+            <div style="color:rgba(255,255,255,0.4);"># Live request log — 200ms refresh</div>
+            <div><span style="color:#10B981;">200</span> <span style="color:#14C4BE;">GET</span> <span style="color:rgba(255,255,255,0.7);">/api/patients?ward=ER</span> <span style="color:rgba(255,255,255,0.3);">32ms · 09:42:18</span></div>
+            <div><span style="color:#10B981;">201</span> <span style="color:#F59E0B;">POST</span> <span style="color:rgba(255,255,255,0.7);">/api/lab/results</span> <span style="color:rgba(255,255,255,0.3);">44ms · 09:42:15</span></div>
+            <div><span style="color:#10B981;">200</span> <span style="color:#14C4BE;">GET</span> <span style="color:rgba(255,255,255,0.7);">/api/ehr/MC-00412</span> <span style="color:rgba(255,255,255,0.3);">51ms · 09:42:12</span></div>
+            <div><span style="color:#10B981;">200</span> <span style="color:#8B5CF6;">PUT</span> <span style="color:rgba(255,255,255,0.7);">/api/appointments/441</span> <span style="color:rgba(255,255,255,0.3);">28ms · 09:42:09</span></div>
+            <div><span style="color:#10B981;">201</span> <span style="color:#F59E0B;">POST</span> <span style="color:rgba(255,255,255,0.7);">/api/billing/invoice</span> <span style="color:rgba(255,255,255,0.3);">67ms · 09:42:05</span></div>
+            <div><span style="color:#10B981;">200</span> <span style="color:#14C4BE;">GET</span> <span style="color:rgba(255,255,255,0.7);">/api/pharmacy/stock</span> <span style="color:rgba(255,255,255,0.3);">39ms · 09:41:58</span></div>
+            <div><span style="color:#E8553A;">503</span> <span style="color:#F59E0B;">POST</span> <span style="color:rgba(255,255,255,0.7);">/api/sms/notify</span> <span style="color:rgba(255,255,255,0.3);">timeout · 09:41:52</span></div>
+            <div><span style="color:#10B981;">200</span> <span style="color:#14C4BE;">GET</span> <span style="color:rgba(255,255,255,0.7);">/api/dashboard/stats</span> <span style="color:rgba(255,255,255,0.3);">22ms · 09:41:48</span></div>
+          </div>
+          <div style="margin-top:14px;">
+            <div style="font-size:11px;color:var(--gray-400);margin-bottom:10px;font-family:var(--font-sans);">Stack: Node.js · Express · PostgreSQL · RabbitMQ · Redis · AWS EKS</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <span class="badge success"><i class="fas fa-database"></i> PostgreSQL: 12ms avg</span>
+              <span class="badge info"><i class="fas fa-bolt"></i> Redis cache: HIT 94%</span>
+              <span class="badge neutral"><i class="fab fa-aws"></i> EKS: 3 nodes healthy</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- end .main -->
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- New Patient Modal -->
+<div class="modal-overlay" id="modal-new-patient">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-user-plus" style="color:var(--teal);margin-right:8px;"></i>Register New Patient</h3>
+      <span class="modal-close" onclick="closeModal('modal-new-patient')"><i class="fas fa-times"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">First Name</label><input class="form-control" placeholder="e.g. Amara" type="text"/></div>
+        <div class="form-group"><label class="form-label">Last Name</label><input class="form-control" placeholder="e.g. Teklehaimanot" type="text"/></div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-control" type="date"/></div>
+        <div class="form-group"><label class="form-label">Gender</label><select class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-control" placeholder="+251 91 234 5678" type="tel"/></div>
+        <div class="form-group"><label class="form-label">Blood Type</label><select class="form-control"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Address</label><input class="form-control" placeholder="Kebele, Woreda, City" type="text"/></div>
+      <div class="form-group"><label class="form-label">Allergies (if any)</label><input class="form-control" placeholder="e.g. Penicillin, Sulfa drugs…" type="text"/></div>
+      <div class="form-group"><label class="form-label">Department</label><select class="form-control"><option>General OPD</option><option>Emergency</option><option>Cardiology</option><option>Pediatrics</option><option>Surgery</option><option>Neurology</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-new-patient')">Cancel</button>
+      <button class="btn btn-primary" onclick="registerPatient()"><i class="fas fa-save"></i> Register Patient</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Appointment Modal -->
+<div class="modal-overlay" id="modal-new-appt">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-calendar-plus" style="color:var(--teal);margin-right:8px;"></i>Book Appointment</h3>
+      <span class="modal-close" onclick="closeModal('modal-new-appt')"><i class="fas fa-times"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Patient ID / Name</label><input class="form-control" placeholder="Search patient…" type="text"/></div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Doctor</label><select class="form-control"><option>Dr. Lemlem Araya</option><option>Dr. Kidane Berhe</option><option>Dr. Miriam Haile</option><option>Dr. Tigist Fekadu</option><option>Dr. Alemu Gebru</option></select></div>
+        <div class="form-group"><label class="form-label">Department</label><select class="form-control"><option>Cardiology</option><option>Emergency</option><option>General OPD</option><option>Pediatrics</option><option>Surgery</option></select></div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Date</label><input class="form-control" type="date" value="2026-05-07"/></div>
+        <div class="form-group"><label class="form-label">Type</label><select class="form-control"><option>Consultation</option><option>Follow-up</option><option>Emergency</option><option>Procedure</option><option>Lab Review</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-control" rows="2" placeholder="Reason for visit…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-new-appt')">Cancel</button>
+      <button class="btn btn-primary" onclick="bookAppointment()"><i class="fas fa-calendar-check"></i> Book Appointment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Prescription Modal -->
+<div class="modal-overlay" id="modal-prescription">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-prescription" style="color:var(--teal);margin-right:8px;"></i>Issue Prescription</h3>
+      <span class="modal-close" onclick="closeModal('modal-prescription')"><i class="fas fa-times"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="alert info"><i class="fas fa-info-circle"></i><span>Patient: <strong>Habtamu Gebre #MC-00412</strong> · Allergy: Penicillin</span></div>
+      <div class="form-group"><label class="form-label">Medication</label><input class="form-control" placeholder="Search drug name…" type="text"/></div>
+      <div class="grid-3">
+        <div class="form-group"><label class="form-label">Dose</label><input class="form-control" placeholder="e.g. 500mg"/></div>
+        <div class="form-group"><label class="form-label">Frequency</label><select class="form-control"><option>Once daily</option><option>Twice daily</option><option>Three times</option><option>As needed</option></select></div>
+        <div class="form-group"><label class="form-label">Duration</label><input class="form-control" placeholder="e.g. 7 days"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Instructions</label><textarea class="form-control" rows="2" placeholder="Take after meals, avoid alcohol…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-prescription')">Cancel</button>
+      <button class="btn btn-primary" onclick="issuePrescription()"><i class="fas fa-check"></i> Issue Prescription</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lab Order Modal -->
+<div class="modal-overlay" id="modal-lab-order">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-vials" style="color:var(--teal);margin-right:8px;"></i>New Lab Order</h3>
+      <span class="modal-close" onclick="closeModal('modal-lab-order')"><i class="fas fa-times"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Patient</label><input class="form-control" placeholder="Search patient…" type="text"/></div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Ordering Doctor</label><select class="form-control"><option>Dr. Lemlem Araya</option><option>Dr. Kidane Berhe</option><option>Dr. Miriam Haile</option></select></div>
+        <div class="form-group"><label class="form-label">Priority</label><select class="form-control"><option>Routine</option><option>Urgent</option><option>STAT</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Tests Required</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:6px 12px;border:1px solid var(--gray-200);border-radius:8px;"><input type="checkbox" checked/> CBC</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:6px 12px;border:1px solid var(--gray-200);border-radius:8px;"><input type="checkbox"/> CMP</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:6px 12px;border:1px solid var(--gray-200);border-radius:8px;"><input type="checkbox"/> Troponin</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:6px 12px;border:1px solid var(--gray-200);border-radius:8px;"><input type="checkbox"/> Lipid Panel</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:6px 12px;border:1px solid var(--gray-200);border-radius:8px;"><input type="checkbox"/> HbA1c</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:6px 12px;border:1px solid var(--gray-200);border-radius:8px;"><input type="checkbox"/> Urinalysis</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-lab-order')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitLabOrder()"><i class="fas fa-flask"></i> Submit Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice Modal -->
+<div class="modal-overlay" id="modal-invoice">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-file-invoice-dollar" style="color:var(--teal);margin-right:8px;"></i>Create Invoice</h3>
+      <span class="modal-close" onclick="closeModal('modal-invoice')"><i class="fas fa-times"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Patient</label><input class="form-control" placeholder="Patient name or ID" type="text"/></div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Service Category</label><select class="form-control"><option>Consultation</option><option>Surgery</option><option>Lab Tests</option><option>Pharmacy</option><option>Ward/Bed</option></select></div>
+        <div class="form-group"><label class="form-label">Payment Method</label><select class="form-control"><option>Chapa</option><option>Telebirr</option><option>Cash</option><option>CBHI Insurance</option><option>Private Insurance</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Amount (ETB)</label><input class="form-control" type="number" placeholder="0.00"/></div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-control" rows="2" placeholder="Services rendered…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-invoice')">Cancel</button>
+      <button class="btn btn-primary" onclick="createInvoice()"><i class="fas fa-file-invoice-dollar"></i> Create Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" style="
+  position:fixed; bottom:28px; right:28px;
+  background:var(--navy); color:white;
+  padding:13px 20px; border-radius:12px;
+  font-size:13px; font-weight:500;
+  box-shadow:0 8px 30px rgba(0,0,0,0.2);
+  display:flex; align-items:center; gap:10px;
+  transform:translateY(80px); opacity:0;
+  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  z-index:999;
+  max-width:340px;
+">
+  <i class="fas fa-check-circle" style="color:var(--teal);font-size:16px;"></i>
+  <span id="toast-msg">Action completed</span>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────
+const patients = [
+  { name:'Amara Teklehaimanot', id:'MC-00389', age:'42F', dept:'Cardiology', status:'admitted', statusLabel:'Admitted', doctor:'Dr. Lemlem A.', admitted:'May 2, 2026', color:'#0EA5A0' },
+  { name:'Habtamu Gebre', id:'MC-00412', age:'54M', dept:'Emergency', status:'critical', statusLabel:'Critical', doctor:'Dr. Kidane B.', admitted:'Today', color:'#E8553A' },
+  { name:'Selam Berhe', id:'MC-00356', age:'35F', dept:'General', status:'outpatient', statusLabel:'Outpatient', doctor:'Dr. Miriam H.', admitted:'Today', color:'#8B5CF6' },
+  { name:'Yohannes Alemu', id:'MC-00421', age:'8M', dept:'Pediatrics', status:'admitted', statusLabel:'Admitted', doctor:'Dr. Tigist F.', admitted:'May 4, 2026', color:'#F59E0B' },
+  { name:'Meron Woldu', id:'MC-00398', age:'29F', dept:'Internal Med', status:'outpatient', statusLabel:'Outpatient', doctor:'Dr. Lemlem A.', admitted:'Today', color:'#10B981' },
+  { name:'Tsehay Zerihun', id:'MC-00445', age:'67F', dept:'Surgery', status:'admitted', statusLabel:'Admitted', doctor:'Dr. Alemu G.', admitted:'May 3, 2026', color:'#0B1C3A' },
+  { name:'Dawit Haile', id:'MC-00401', age:'31M', dept:'Neurology', status:'critical', statusLabel:'Critical', doctor:'Dr. Bethel T.', admitted:'May 1, 2026', color:'#06B6D4' },
+  { name:'Tigist Kebede', id:'MC-00378', age:'50F', dept:'Cardiology', status:'admitted', statusLabel:'Admitted', doctor:'Dr. Lemlem A.', admitted:'Apr 28, 2026', color:'#EC4899' },
+];
+
+function statusBadge(s) {
+  const map = { admitted:'info', critical:'danger', outpatient:'success' };
+  return `<span class="badge ${map[s]||'neutral'}">${s==='critical'?'⚠ ':''}{label}</span>`.replace('{label}', s.charAt(0).toUpperCase()+s.slice(1));
+}
+
+function renderPatients(data) {
+  const tbody = document.getElementById('patient-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = data.map(p => `
+    <tr>
+      <td><div class="patient-card">
+        <div class="patient-avatar" style="background:${p.color};">${p.name.split(' ').map(n=>n[0]).join('').slice(0,2)}</div>
+        <div><div class="patient-name">${p.name}</div></div>
+      </div></td>
+      <td><code style="font-size:12px;background:var(--gray-50);padding:2px 6px;border-radius:4px;">#${p.id}</code></td>
+      <td>${p.age}</td>
+      <td>${p.dept}</td>
+      <td>${statusBadge(p.status).replace('{label}',p.statusLabel)}</td>
+      <td>${p.doctor}</td>
+      <td>${p.admitted}</td>
+      <td><button class="btn btn-sm btn-outline" onclick="showPage('ehr',null);showToast('Viewing record: ${p.name}')">View EHR</button></td>
+    </tr>
+  `).join('');
+}
+
+function filterPatients(type, btn) {
+  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const filtered = type === 'all' ? patients : patients.filter(p => p.status === type);
+  renderPatients(filtered);
+}
+
+// ── NAVIGATION ────────────────────────────────
+const pageTitles = {
+  dashboard: ['Dashboard Overview', 'Live — Mekelle University Hospital · May 2026'],
+  patients: ['Patient Registry', '1,847 registered patients'],
+  appointments: ['Appointments', 'Today: May 6, 2026'],
+  ehr: ['Electronic Health Records', 'Patient: Habtamu Gebre · #MC-00412'],
+  lab: ['Lab & Diagnostics', 'Pending orders & results'],
+  pharmacy: ['Pharmacy', 'Drug inventory & dispensing'],
+  billing: ['Billing & Payments', 'Invoices · Chapa · Telebirr · CBHI'],
+  staff: ['Staff & Doctors', '18 on-duty · 42 total'],
+  notifications: ['Notifications', '8 unread alerts'],
+  api: ['API Monitor', 'Microservice health & logs'],
+};
+
+function showPage(id, navEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  const titles = pageTitles[id] || ['MediCore', ''];
+  document.getElementById('page-title').textContent = titles[0];
+  document.getElementById('page-sub').innerHTML = `<span class="live-dot"></span>${titles[1]}`;
+  if (id === 'patients') renderPatients(patients);
+}
+
+// ── MODALS ────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ── TOAST ─────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  const tm = document.getElementById('toast-msg');
+  tm.textContent = msg;
+  t.style.transform = 'translateY(0)'; t.style.opacity = '1';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.transform = 'translateY(80px)'; t.style.opacity = '0'; }, 3000);
+}
+
+// ── FORM ACTIONS ──────────────────────────────
+function registerPatient() {
+  closeModal('modal-new-patient');
+  showToast('Patient registered successfully — ID #MC-00' + (Math.floor(Math.random()*100)+450));
+}
+function bookAppointment() {
+  closeModal('modal-new-appt');
+  showToast('Appointment booked & SMS confirmation sent');
+}
+function issuePrescription() {
+  closeModal('modal-prescription');
+  showToast('Prescription issued — Forwarded to Pharmacy');
+}
+function submitLabOrder() {
+  closeModal('modal-lab-order');
+  showToast('Lab order submitted — LAB-2026-' + (Math.floor(Math.random()*100)+442));
+}
+function createInvoice() {
+  closeModal('modal-invoice');
+  showToast('Invoice created — INV-2026-' + (Math.floor(Math.random()*100)+895));
+}
+
+// ── SEARCH ────────────────────────────────────
+function handleSearch(val) {
+  if (!val) { renderPatients(patients); return; }
+  const v = val.toLowerCase();
+  const filtered = patients.filter(p =>
+    p.name.toLowerCase().includes(v) || p.id.includes(v) || p.dept.toLowerCase().includes(v)
+  );
+  showPage('patients', document.querySelector('[onclick*=patients]'));
+  renderPatients(filtered);
+}
+
+// ── SLOT INTERACTION ──────────────────────────
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('slot') && !e.target.classList.contains('booked')) {
+    document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
+    e.target.classList.add('selected');
+  }
+});
+
+// ── INIT ──────────────────────────────────────
+renderPatients(patients);
+
+// Simulate live data pulse
+setInterval(() => {
+  const liveDots = document.querySelectorAll('.live-dot');
+  liveDots.forEach(d => { d.style.opacity = '0.4'; setTimeout(() => d.style.opacity = '1', 900); });
+}, 1800);
+</script>
+</body>
+</html>
